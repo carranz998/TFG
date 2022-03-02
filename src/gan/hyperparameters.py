@@ -1,0 +1,9 @@
+from torch import nn
+
+LOSS_FUNCTION = nn.BCEWithLogitsLoss()
+N_EPOCHS = 200
+Z_DIMENSION = 64
+DISPLAY_STEP = 500
+BATCH_SIZE = 128
+LEARNING_RATE = 0.00001
+DEVICE = 'cuda'

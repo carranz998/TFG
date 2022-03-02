@@ -28,11 +28,11 @@ class Cut3dViewVisualization:
     def plot_cube(cls, cube: np.ndarray, angle=320) -> None:
         cube = normalize(cube)
 
-        facecolors = cm.viridis(cube)
-        facecolors[:, :, :, -1] = cube
-        facecolors = cls.__explode(facecolors)
+        face_colors = cm.viridis(cube)
+        face_colors[:, :, :, -1] = cube
+        face_colors = cls.__explode(face_colors)
 
-        filled = facecolors[:, :, :, -1] != 0
+        filled = face_colors[:, :, :, -1] != 0
         x, y, z = cls.__expand_coordinates(np.indices(np.array(filled.shape) + 1))
 
         fig = plt.figure(figsize=(30 / 2.54, 30 / 2.54))
@@ -42,5 +42,5 @@ class Cut3dViewVisualization:
         ax.set_ylim(top=IMG_DIM * 2)
         ax.set_zlim(top=IMG_DIM * 2)
 
-        ax.voxels(x, y, z, filled, facecolors=facecolors, shade=False)
+        ax.voxels(x, y, z, filled, facecolors=face_colors, shade=False)
         plt.show()
