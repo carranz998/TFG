@@ -7,15 +7,16 @@ from torchvision.utils import make_grid
 from tqdm import tqdm
 
 from src.gan.discriminator import Discriminator
+from src.gan.fully_connected_generator import FullyConnectedGenerator
 from src.gan.generator import Generator
 
 
 class VanillaGAN:
-    def __init__(self, device: str, learning_rate: float, z_dimension: int):
+    def __init__(self, generator_network: Generator, discriminator: Discriminator, learning_rate: float):
         torch.manual_seed(0)
 
-        self.generator_network = Generator(z_dimension).to(device)
-        self.discrimination_network = Discriminator().to(device)
+        self.generator_network = generator_network
+        self.discrimination_network = discriminator
 
         self.generator_optimization = torch.optim.Adam(self.generator_network.parameters(), lr=learning_rate)
         self.discriminator_optimization = torch.optim.Adam(self.discrimination_network.parameters(), lr=learning_rate)
@@ -29,7 +30,7 @@ class VanillaGAN:
         plt.show()
 
     @staticmethod
-    def __discriminator_loss(generator_network: Generator, discrimination_network: Discriminator,
+    def __discriminator_loss(generator_network: FullyConnectedGenerator, discrimination_network: Discriminator,
                              real_images: torch.Tensor, batch_size: int, z_dimension: int,
                              device: str, loss_function: Callable) -> torch.Tensor:
         noise = torch.randn(size=[batch_size, z_dimension], device=device)
@@ -46,7 +47,7 @@ class VanillaGAN:
         return discriminator_loss
 
     @staticmethod
-    def __generator_loss(generator_network: Generator, discrimination_network: Discriminator, batch_size: int,
+    def __generator_loss(generator_network: FullyConnectedGenerator, discrimination_network: Discriminator, batch_size: int,
                          z_dimension: int, device: str, loss_function: Callable) -> torch.Tensor:
         noise = torch.randn(size=[batch_size, z_dimension], device=device)
         fakes = generator_network(noise)
