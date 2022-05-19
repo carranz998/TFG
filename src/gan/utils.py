@@ -1,17 +1,13 @@
 import torch
-import random
-import numpy as np
-import os
 import torchvision
 import config
-from torchvision.utils import save_image
-from scipy.stats import truncnorm
 
 
 # Print losses occasionally and print to tensorboard
 def plot_to_tensorboard(
     writer, loss_critic, loss_gen, real, fake, tensorboard_step
 ):
+    writer.add_scalar('Loss Generator', loss_gen, global_step=tensorboard_step)
     writer.add_scalar("Loss Critic", loss_critic, global_step=tensorboard_step)
 
     with torch.no_grad():
@@ -64,18 +60,3 @@ def load_checkpoint(checkpoint_file, model, optimizer, lr):
     # and it will lead to many hours of debugging \:
     for param_group in optimizer.param_groups:
         param_group["lr"] = lr
-
-def generate_examples(gen, steps, truncation=0.7, n=100):
-    """
-    Tried using truncation trick here but not sure it actually helped anything, you can
-    remove it if you like and just sample from torch.randn
-    """
-    gen.eval()
-    alpha = 1.0
-    for i in range(n):
-        with torch.no_grad():
-            noise = torch.tensor(truncnorm.rvs(-truncation, truncation, size=(1, config.Z_DIM, 1, 1)), device=config.DEVICE, dtype=torch.float32)
-            img = gen(noise, alpha, steps)
-            save_image(img*0.5+0.5, f"saved_examples/img_{i}.png")
-
-    gen.train()

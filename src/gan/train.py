@@ -1,19 +1,17 @@
+from math import log2
+
 import torch
 import torch.optim as optim
 import torchvision.datasets as datasets
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
-from utils import (
-    gradient_penalty,
-    plot_to_tensorboard,
-    save_checkpoint,
-    load_checkpoint
-)
-from progressive_GAN import Discriminator, Generator
-from math import log2
 from tqdm import tqdm
+
 import config
+from progressive_GAN import Discriminator, Generator
+from utils import (gradient_penalty, load_checkpoint, plot_to_tensorboard,
+                   save_checkpoint)
 
 torch.backends.cudnn.benchmarks = True
 

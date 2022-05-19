@@ -1,7 +1,7 @@
 import torch
 from math import log2
 
-START_TRAIN_AT_IMG_SIZE = 256
+START_TRAIN_AT_IMG_SIZE = 4
 DATASET = 'C:\\Users\\carra\\OneDrive\\Escritorio\\cositas'
 GENERATOR_CHECKPOINT = "generator.pth"
 DISCRIMINATOR_CHECKPOINT = "discriminator.pth"
