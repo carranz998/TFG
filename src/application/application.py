@@ -2,7 +2,7 @@ from torch.utils.data import DataLoader
 import torchvision.datasets
 from data_preprocessing.input_image_preprocessor import InputImagePreprocessor
 from utils.command_line_parser import CommandLineParser
-from utils.directory_iterator import DirectoryIterator
+from utils.file_management.directory_iterator import DirectoryIterator
 
 
 class Application:
