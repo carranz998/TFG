@@ -2,11 +2,9 @@ from math import log2
 
 import gan.config.hyperparameters as hyperparameters
 import torch
-import torch.optim as optim
 import torchvision.datasets as datasets
 import torchvision.transforms as transforms
-from gan.model.discriminator import Discriminator
-from gan.model.generator import Generator
+from gan.model.builder.pro_gan_builder import ProGANBuilder
 from gan.utils.checkpoints import Checkpoint
 from gan.utils.gradient_penalty import gradient_penalty
 from gan.utils.tensorboard_plot import plot_to_tensorboard
@@ -30,11 +28,12 @@ def get_loader(image_size):
             transforms.Normalize(
                 [0.5 for _ in range(hyperparameters.CHANNELS_IMG)],
                 [0.5 for _ in range(hyperparameters.CHANNELS_IMG)],
-            ),
+            )
         ]
     )
     batch_size = hyperparameters.BATCH_SIZES[int(log2(image_size / 4))]
     dataset = datasets.ImageFolder(root=hyperparameters.DATASET_PATH, transform=transform)
+
     loader = DataLoader(
         dataset,
         batch_size=batch_size,
@@ -42,6 +41,7 @@ def get_loader(image_size):
         num_workers=hyperparameters.NUM_WORKERS,
         pin_memory=True,
     )
+
     return loader, dataset
 
 
@@ -111,28 +111,21 @@ def train_fn(
             )
             tensorboard_step += 1
 
-        loop.set_postfix(
-            gp=gp.item(),
-            loss_critic=loss_critic.item(),
-        )
+        loop.set_postfix(gp=gp.item(), loss_critic=loss_critic.item())
 
     return tensorboard_step, alpha
 
 
 def train_all():
-    generator_network = Generator(hyperparameters.Z_DIM, hyperparameters.IN_CHANNELS, img_channels=hyperparameters.CHANNELS_IMG) \
-        .to(hyperparameters.DEVICE)
+    created_components = ProGANBuilder.build_by_pipeline()
 
-    discriminator_network = Discriminator(hyperparameters.Z_DIM, hyperparameters.IN_CHANNELS, img_channels=hyperparameters.CHANNELS_IMG) \
-        .to(hyperparameters.DEVICE)
+    generator_network = created_components['generator_network']
+    generator_optimizer = created_components['generator_optimizer']
+    generator_scaler = created_components['generator_scaler']
 
-    # initialize optimizers and scalers for FP16 training
-    generator_optimizer = optim.Adam(generator_network.parameters(), lr=hyperparameters.LEARNING_RATE, betas=(0.0, 0.99))
-    discriminator_optimizer = optim.Adam(
-        discriminator_network.parameters(), lr=hyperparameters.LEARNING_RATE, betas=(0.0, 0.99)
-    )
-    discriminator_scaler = torch.cuda.amp.GradScaler()
-    generator_scaler = torch.cuda.amp.GradScaler()
+    discriminator_network = created_components['discriminator_network']
+    discriminator_optimizer = created_components['discriminator_optimizer']
+    discriminator_scaler = created_components['discriminator_scaler']
 
     # for tensorboard plotting
     writer = SummaryWriter(f"logs/gan1")

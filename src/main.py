@@ -1,8 +1,8 @@
 from math import log2
 
 import torch
-from gan.model.discriminator import Discriminator
-from gan.model.generator import Generator
+from gan.model.components.discriminator import Discriminator
+from gan.model.components.generator import Generator
 from gan.training.train import train_all
 
 

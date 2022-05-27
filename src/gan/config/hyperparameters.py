@@ -22,3 +22,6 @@ NUM_STEPS = int(log2(IMAGE_SIZE / 4)) + 1
 PROGRESSIVE_EPOCHS = [50] * len(BATCH_SIZES)
 FIXED_NOISE = torch.randn(8, Z_DIM, 1, 1).to(DEVICE)
 NUM_WORKERS = 4
+
+FACTORS = [1, 1, 1, 1, 1/2, 1/4, 1/8, 1/16, 1/32]
+
