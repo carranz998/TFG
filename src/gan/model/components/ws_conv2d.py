@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 
 
@@ -6,7 +7,7 @@ class WSConv2d(nn.Module):
         super(WSConv2d, self).__init__()
         self.conv = nn.Conv2d(input_channel, out_channel, kernel_size, stride, padding)
         self.scale = (gain / (input_channel * (kernel_size ** 2))) ** 0.5
-        self.bias = self.conv.bias
+        self.bias = torch.as_tensor(self.conv.bias)
         self.conv.bias = None
 
         # conv layer

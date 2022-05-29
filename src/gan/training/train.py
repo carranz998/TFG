@@ -32,7 +32,7 @@ def get_loader(image_size):
         ]
     )
     batch_size = hyperparameters.BATCH_SIZES[int(log2(image_size / 4))]
-    dataset = datasets.ImageFolder(root=hyperparameters.DATASET_PATH, transform=transform)
+    dataset = datasets.ImageFolder(root=hyperparameters.PATH_DATASET, transform=transform)
 
     loader = DataLoader(
         dataset,
@@ -128,14 +128,21 @@ def train_all():
     discriminator_scaler = created_components['discriminator_scaler']
 
     # for tensorboard plotting
-    writer = SummaryWriter(f"logs/gan1")
+    writer = SummaryWriter(f'logs/gan1')
 
     if hyperparameters.LOAD_MODEL:
         Checkpoint.load(
-            generator_network, generator_optimizer, hyperparameters.GENERATOR_CHECKPOINT, hyperparameters.LEARNING_RATE,
+            generator_network, 
+            generator_optimizer, 
+            hyperparameters.PATH_GENERATOR_CHECKPOINT, 
+            hyperparameters.LEARNING_RATE
         )
+
         Checkpoint.load(
-            discriminator_network, discriminator_optimizer, hyperparameters.DISCRIMINATOR_CHECKPOINT, hyperparameters.LEARNING_RATE,
+            discriminator_network, 
+            discriminator_optimizer, 
+            hyperparameters.PATH_DISCRIMINATOR_CHECKPOINT, 
+            hyperparameters.LEARNING_RATE
         )
 
     generator_network.train()
@@ -169,8 +176,15 @@ def train_all():
 
             if hyperparameters.SAVE_MODEL:
                 Checkpoint.save(
-                    generator_network, generator_optimizer, output_filename=hyperparameters.GENERATOR_CHECKPOINT)
+                    generator_network, 
+                    generator_optimizer, 
+                    output_filename=hyperparameters.PATH_GENERATOR_CHECKPOINT
+                )
+
                 Checkpoint.save(
-                    discriminator_network, discriminator_optimizer, output_filename=hyperparameters.DISCRIMINATOR_CHECKPOINT)
+                    discriminator_network, 
+                    discriminator_optimizer, 
+                    output_filename=hyperparameters.PATH_DISCRIMINATOR_CHECKPOINT
+                )
 
         step += 1  # progress to the next img size

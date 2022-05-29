@@ -3,9 +3,9 @@ from math import log2
 import torch
 
 START_TRAIN_AT_IMG_SIZE = 4
-DATASET_PATH = 'C:\\Users\\carra\\OneDrive\\Escritorio\\cositas'
-GENERATOR_CHECKPOINT = "generator.pth"
-DISCRIMINATOR_CHECKPOINT = "discriminator.pth"
+PATH_DATASET = 'C:\\Users\\carra\\OneDrive\\Escritorio\\cositas'
+PATH_GENERATOR_CHECKPOINT = "generator.pth"
+PATH_DISCRIMINATOR_CHECKPOINT = "discriminator.pth"
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 SAVE_MODEL = True
 LOAD_MODEL = False

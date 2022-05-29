@@ -19,7 +19,8 @@ class CNNBlock(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         for block in self.convolutional_blocks:
-            x = self.leaky_relu(block(x))
+            convolution = block(x)
+            x = self.leaky_relu(convolution)
             
             if self.use_pixel_norm:
                 x = self.pixel_norm(x)

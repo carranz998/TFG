@@ -6,7 +6,8 @@ class PixelNorm(nn.Module):
     def __init__(self) -> None:
         super(PixelNorm, self).__init__()
 
-        self.epsilon = 1e-8
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return x / torch.sqrt(torch.mean(x**2, dim=1, keepdim=True) + self.epsilon)
+    def forward(self, x: torch.Tensor, epsilon: float=1e-8) -> torch.Tensor:
+        mean_of_squares = torch.mean(x**2, dim=1, keepdim=True)
+        normalization_factor = 1 / torch.sqrt(mean_of_squares + epsilon)
+        
+        return x * normalization_factor
