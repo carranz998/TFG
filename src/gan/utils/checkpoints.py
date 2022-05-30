@@ -1,18 +1,19 @@
+import gan.config.hyperparameters as hyperparameters
 import torch
 import torch.nn as nn
 
 
 class Checkpoint:
     @classmethod
-    def load(cls, model: nn.Module, optimizer: torch.optim.Optimizer, input_filename: str, lr: float) -> None:
+    def load(cls, model: nn.Module, optimizer: torch.optim.Optimizer, input_filename: str) -> None:
         print('=> Loading checkpoint')
 
-        checkpoint = torch.load(input_filename, map_location='cuda')
+        checkpoint = torch.load(input_filename, map_location=hyperparameters.DEVICE)
         model.load_state_dict(checkpoint['state_dict'])
         optimizer.load_state_dict(checkpoint['optimizer'])
 
         for param_group in optimizer.param_groups:
-            param_group['lr'] = lr
+            param_group['lr'] = hyperparameters.LEARNING_RATE
 
     @classmethod
     def save(cls, model: nn.Module, optimizer: torch.optim.Optimizer, output_filename: str) -> None:

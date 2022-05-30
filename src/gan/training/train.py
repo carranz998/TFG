@@ -2,13 +2,10 @@ from math import log2
 
 import gan.config.hyperparameters as hyperparameters
 import torch
-import torchvision.datasets as datasets
-import torchvision.transforms as transforms
-from gan.model.builder.pro_gan_builder import ProGANBuilder
-from gan.utils.checkpoints import Checkpoint
+from gan.model.auxiliar.image_loader import ImageLoader
+from gan.model.pro_gan import ProGAN
 from gan.utils.gradient_penalty import gradient_penalty
 from gan.utils.tensorboard_plot import plot_to_tensorboard
-from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 
@@ -17,33 +14,6 @@ torch.backends.cudnn.benchmarks = True
 
 def calculate_step() -> int:
     return int(log2(hyperparameters.START_TRAIN_AT_IMG_SIZE / 4))
-
-
-def get_loader(image_size):
-    transform = transforms.Compose(
-        [
-            transforms.Resize((image_size, image_size)),
-            transforms.ToTensor(),
-            transforms.RandomHorizontalFlip(p=0.5),
-            transforms.Normalize(
-                [0.5 for _ in range(hyperparameters.CHANNELS_IMG)],
-                [0.5 for _ in range(hyperparameters.CHANNELS_IMG)],
-            )
-        ]
-    )
-    batch_size = hyperparameters.BATCH_SIZES[int(log2(image_size / 4))]
-    dataset = datasets.ImageFolder(root=hyperparameters.PATH_DATASET, transform=transform)
-
-    loader = DataLoader(
-        dataset,
-        batch_size=batch_size,
-        shuffle=True,
-        num_workers=hyperparameters.NUM_WORKERS,
-        pin_memory=True,
-    )
-
-    return loader, dataset
-
 
 def train_fn(
     critic,
@@ -117,33 +87,20 @@ def train_fn(
 
 
 def train_all():
-    created_components = ProGANBuilder.build_by_pipeline()
+    pro_gan = ProGAN()
 
-    generator_network = created_components['generator_network']
-    generator_optimizer = created_components['generator_optimizer']
-    generator_scaler = created_components['generator_scaler']
+    generator_network = pro_gan.generator_network
+    generator_optimizer = pro_gan.generator_optimizer
+    generator_scaler = pro_gan.generator_scaler
 
-    discriminator_network = created_components['discriminator_network']
-    discriminator_optimizer = created_components['discriminator_optimizer']
-    discriminator_scaler = created_components['discriminator_scaler']
+    discriminator_network = pro_gan.discriminator_network
+    discriminator_optimizer = pro_gan.discriminator_optimizer
+    discriminator_scaler = pro_gan.discriminator_scaler
 
-    # for tensorboard plotting
     writer = SummaryWriter(f'logs/gan1')
 
     if hyperparameters.LOAD_MODEL:
-        Checkpoint.load(
-            generator_network, 
-            generator_optimizer, 
-            hyperparameters.PATH_GENERATOR_CHECKPOINT, 
-            hyperparameters.LEARNING_RATE
-        )
-
-        Checkpoint.load(
-            discriminator_network, 
-            discriminator_optimizer, 
-            hyperparameters.PATH_DISCRIMINATOR_CHECKPOINT, 
-            hyperparameters.LEARNING_RATE
-        )
+        pro_gan.load_configurations()
 
     generator_network.train()
     discriminator_network.train()
@@ -153,12 +110,17 @@ def train_all():
 
     for num_epochs in hyperparameters.PROGRESSIVE_EPOCHS[step:]:
         alpha = 1e-5  # start with very low alpha
-        loader, dataset = get_loader(4 * 2 ** step)  # 4->0, 8->1, 16->2, 32->3, 64 -> 4
+        image_size = 4 * 2 ** step
+
+        image_components = ImageLoader.build_components(image_size)
+        loader = image_components['dataloader']
+        dataset = image_components['dataset']
         
-        print(f"Current image size: {4 * 2 ** step}")
+        print(f"Current image size: {image_size}")
 
         for epoch in range(num_epochs):
-            print(f"Epoch [{epoch+1}/{num_epochs}]")
+            print(f'Epoch [{epoch+1}/{num_epochs}]')
+            
             tensorboard_step, alpha = train_fn(
                 discriminator_network,
                 generator_network,
@@ -175,16 +137,6 @@ def train_all():
             )
 
             if hyperparameters.SAVE_MODEL:
-                Checkpoint.save(
-                    generator_network, 
-                    generator_optimizer, 
-                    output_filename=hyperparameters.PATH_GENERATOR_CHECKPOINT
-                )
-
-                Checkpoint.save(
-                    discriminator_network, 
-                    discriminator_optimizer, 
-                    output_filename=hyperparameters.PATH_DISCRIMINATOR_CHECKPOINT
-                )
+                pro_gan.save_configurations()
 
         step += 1  # progress to the next img size

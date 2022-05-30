@@ -27,8 +27,6 @@ def gradient_penalty(critic: nn.Module, real: torch.Tensor, fake: torch.Tensor,
     gradient_norm = gradient.norm(2, dim=1)
     gradient_penalty = torch.mean((gradient_norm - 1) ** 2)
 
-    print(gradient_penalty == GradientCalculations.get_gradient_penalty(critic, alpha, train_step, real, fake, device))
-
     return gradient_penalty
 
 
