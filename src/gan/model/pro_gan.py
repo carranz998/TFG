@@ -32,26 +32,26 @@ class ProGAN:
         Checkpoint.load(
             model=self.generator_network, 
             optimizer=self.generator_optimizer, 
-            input_filename=hyperparameters.PATH_GENERATOR_CHECKPOINT
+            input_filepath=hyperparameters.PATH_GENERATOR_CHECKPOINT
         )
 
         Checkpoint.load(
             model=self.discriminator_network, 
             optimizer=self.discriminator_optimizer, 
-            input_filename=hyperparameters.PATH_DISCRIMINATOR_CHECKPOINT
+            input_filepath=hyperparameters.PATH_DISCRIMINATOR_CHECKPOINT
         )
 
     def save_configurations(self):
         Checkpoint.save(
             model=self.generator_network, 
             optimizer=self.generator_optimizer, 
-            output_filename=hyperparameters.PATH_GENERATOR_CHECKPOINT
+            output_filepath=hyperparameters.PATH_GENERATOR_CHECKPOINT
         )
 
         Checkpoint.save(
             model=self.discriminator_network, 
             optimizer=self.discriminator_optimizer, 
-            output_filename=hyperparameters.PATH_DISCRIMINATOR_CHECKPOINT
+            output_filepath=hyperparameters.PATH_DISCRIMINATOR_CHECKPOINT
         )
 
     def train(self):

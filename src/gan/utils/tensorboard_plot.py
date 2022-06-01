@@ -17,6 +17,3 @@ def plot_to_tensorboard(
         writer.add_image("Real", img_grid_real, global_step=tensorboard_step)
         writer.add_image("Fake", img_grid_fake, global_step=tensorboard_step)
 
-        filename_output_image = f'{tensorboard_step}.jpeg'
-        basepath_output_images = os.path.join('output_images', filename_output_image)
-        torchvision.utils.save_image(img_grid_fake, basepath_output_images)
