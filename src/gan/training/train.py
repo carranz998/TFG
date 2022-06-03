@@ -78,6 +78,7 @@ def train_fn(
                 real.detach(),
                 fixed_fakes.detach(),
                 tensorboard_step,
+                step
             )
             tensorboard_step += 1
 
