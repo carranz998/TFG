@@ -25,7 +25,7 @@ def plot_to_tensorboard(
 
 
 def save_unpacked_image_grid(tensorboard_step, step, img_grid_real, base_dirname):
-    filename_output_image = f'{tensorboard_step}.jpeg'
+    filename_output_image = f'{tensorboard_step}.png'
     image_size = 4 * 2 ** step
 
     dirname = os.path.join(base_dirname, str(image_size))

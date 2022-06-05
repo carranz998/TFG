@@ -1,9 +1,11 @@
+import os
 from math import log2
 
 import gan.config.hyperparameters as hyperparameters
 import torch
 from gan.model.auxiliar.image_loader import ImageLoader
 from gan.model.pro_gan import ProGAN
+from gan.utils.fid import fid_main
 from gan.utils.gradient_penalty import gradient_penalty
 from gan.utils.tensorboard_plot import plot_to_tensorboard
 from torch.utils.tensorboard import SummaryWriter
@@ -140,4 +142,14 @@ def train_all():
             if hyperparameters.SAVE_MODEL:
                 pro_gan.save_configurations()
 
-        step += 1  # progress to the next img size
+        image_size = 4 * 2 ** step
+
+        dirname_fake_images = os.path.join('generated_images', str(image_size))
+        dirname_real_images = os.path.join('real_images', str(image_size))
+
+        fid_value = fid_main(dirname_fake_images, dirname_real_images, batch_size=image_components['batch_size'])
+        print(f'EL FID VALUE ES: {fid_value}')
+
+        writer.add_scalar('FID', fid_value, global_step=tensorboard_step)
+
+        step += 1
