@@ -1,12 +1,13 @@
 from math import log2
+import os
 
 import torch
 
 START_TRAIN_AT_IMG_SIZE = 4
 # PATH_DATASET = 'C:\\Users\\carra\\OneDrive\\Escritorio\\cositas'
 PATH_DATASET = 'C:\\Users\\carra\\OneDrive\\Escritorio\\simplified'
-PATH_GENERATOR_CHECKPOINT = 'training_checkpoints\\generator.pth'
-PATH_DISCRIMINATOR_CHECKPOINT = 'training_checkpoints\\discriminator.pth'
+PATH_GENERATOR_CHECKPOINT = 'generator.pth'
+PATH_DISCRIMINATOR_CHECKPOINT = 'discriminator.pth'
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 SAVE_MODEL = True
 LOAD_MODEL = True

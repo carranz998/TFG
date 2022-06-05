@@ -20,17 +20,23 @@ def plot_to_tensorboard(
         writer.add_image('Real', img_grid_real, global_step=tensorboard_step)
         writer.add_image('Fake', img_grid_fake, global_step=tensorboard_step)
 
-        filename_output_image = f'{tensorboard_step}.jpeg'
-        image_size = 4 * 2 ** step
-        dirname = os.path.join('generated_images', str(image_size))
-        basepath_output_images = os.path.join(dirname, filename_output_image)
+        save_unpacked_image_grid(tensorboard_step, step, img_grid_real, base_dirname='generated_images')
+        save_unpacked_image_grid(tensorboard_step, step, img_grid_fake, base_dirname='real_images')
 
-        create_file(basepath_output_images)
 
-        torchvision.utils.save_image(img_grid_real, basepath_output_images)
-        split_image(basepath_output_images, image_size)
+def save_unpacked_image_grid(tensorboard_step, step, img_grid_real, base_dirname):
+    filename_output_image = f'{tensorboard_step}.jpeg'
+    image_size = 4 * 2 ** step
 
-        os.remove(basepath_output_images)
+    dirname = os.path.join(base_dirname, str(image_size))
+    basepath_output_images = os.path.join(dirname, filename_output_image)
+
+    create_file(basepath_output_images)
+
+    torchvision.utils.save_image(img_grid_real, basepath_output_images)
+    split_image(basepath_output_images, image_size)
+
+    os.remove(basepath_output_images)
 
 
 def split_image(filepath: str, image_size: int) -> None:

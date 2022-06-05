@@ -131,7 +131,7 @@ def train_all():
                 alpha,
                 discriminator_optimizer,
                 generator_optimizer,
-                tensorboard_step,   
+                tensorboard_step,
                 writer,
                 generator_scaler,
                 discriminator_scaler,

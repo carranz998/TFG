@@ -125,5 +125,6 @@ venv/
 # log files
 logs/
 
-# generated images
+# output images
 generated_images/
+real_images/
