@@ -1,13 +1,14 @@
-from typing import Any
-from pipetools import pipe
 from math import log2
+from typing import Any
 
 import gan.config.hyperparameters as hyperparameters
 import torchvision.datasets as datasets
 import torchvision.transforms as transforms
+from pipetools import pipe
 from torch.utils.data import DataLoader
 
-class ImageLoader:
+
+class DatasetBuilder:
     @classmethod
     def __init_processed_images_dataset(cls, created_components: dict[str, Any]) -> dict[str, Any]:
         image_size = created_components['image_size']
@@ -15,7 +16,10 @@ class ImageLoader:
         image_transformations = [
             transforms.Resize((image_size, image_size)),
             transforms.ToTensor(),
-            transforms.Normalize([0.5] * hyperparameters.CHANNELS_IMG, [0.5] * hyperparameters.CHANNELS_IMG)
+            transforms.Normalize(
+                [0.5] * hyperparameters.CHANNELS_IMG, 
+                [0.5] * hyperparameters.CHANNELS_IMG
+            )
         ]
 
         transformation_pipeline = transforms.Compose(image_transformations)

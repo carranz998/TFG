@@ -3,7 +3,7 @@ from math import log2
 
 import gan.config.hyperparameters as hyperparameters
 import torch
-from gan.model.auxiliar.image_loader import ImageLoader
+from gan.model.builder.dataset_builder import DatasetBuilder
 from gan.model.pro_gan import ProGAN
 from gan.utils.fid import fid_main
 from gan.utils.gradient_penalty import gradient_penalty
@@ -115,7 +115,7 @@ def train_all():
         alpha = 1e-5  # start with very low alpha
         image_size = 4 * 2 ** step
 
-        image_components = ImageLoader.build_components(image_size)
+        image_components = DatasetBuilder.build_components(image_size)
         loader = image_components['dataloader']
         dataset = image_components['dataset']
         

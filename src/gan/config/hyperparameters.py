@@ -1,16 +1,15 @@
 from math import log2
-import os
 
 import torch
 
 START_TRAIN_AT_IMG_SIZE = 4
-# PATH_DATASET = 'C:\\Users\\carra\\OneDrive\\Escritorio\\cositas'
-PATH_DATASET = 'C:\\Users\\carra\\OneDrive\\Escritorio\\simplified'
+PATH_DATASET = 'C:\\Users\\carra\\OneDrive\\Escritorio\\cositas'
+# PATH_DATASET = 'C:\\Users\\carra\\OneDrive\\Escritorio\\simplified'
 PATH_GENERATOR_CHECKPOINT = 'generator.pth'
 PATH_DISCRIMINATOR_CHECKPOINT = 'discriminator.pth'
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
-SAVE_MODEL = False
-LOAD_MODEL = False
+SAVE_MODEL = True
+LOAD_MODEL = True
 LEARNING_RATE = 1e-3
 BATCH_SIZES = [32, 32, 32, 16, 16, 16, 16, 8, 4]
 IMAGE_SIZE = 512
@@ -26,4 +25,3 @@ FIXED_NOISE = torch.randn(8, Z_DIM, 1, 1).to(DEVICE)
 NUM_WORKERS = 4
 
 FACTORS = [1, 1, 1, 1, 1/2, 1/4, 1/8, 1/16, 1/32]
-

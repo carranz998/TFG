@@ -12,7 +12,7 @@ class ProGANBuilder:
     @classmethod
     def build_by_pipeline(cls) -> Dict[str, Any]:
         create_all_components = pipe \
-            | cls.__create_empty_dictionary \
+            | cls.__init_empty_dictionary \
             | cls.__init_networks \
             | cls.__init_optimizers \
             | cls.__init_scalers
@@ -22,7 +22,7 @@ class ProGANBuilder:
         return created_components
 
     @classmethod
-    def __create_empty_dictionary(cls) -> Dict[None, None]:
+    def __init_empty_dictionary(cls) -> Dict[None, None]:
         return {}
 
     @classmethod

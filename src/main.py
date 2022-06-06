@@ -1,10 +1,14 @@
 from math import log2
 
 import torch
+from tqdm import tqdm
+from data_preprocessing.input_image_preprocessor import InputImagePreprocessor
 from gan.model.components.discriminator import Discriminator
 from gan.model.components.generator import Generator
 from gan.training.train import train_all
+import gan.config.hyperparameters as hyperparameters
 
+from utils.file_management.directory_iterator import DirectoryIterator
 
 if __name__ == "__main__":
     Z_DIM = 100
@@ -20,5 +24,10 @@ if __name__ == "__main__":
         out = critic(z, alpha=0.5, steps=num_steps)
         assert out.shape == (1, 1)
         print(f"Success! At img size: {img_size}")
+
+    path_subfiles = DirectoryIterator.expanded_subtree(hyperparameters.PATH_DATASET)
+
+    input_image_preprocessor = InputImagePreprocessor()
+    map(input_image_preprocessor.delete_axis, tqdm(list(path_subfiles)))
 
     train_all()
