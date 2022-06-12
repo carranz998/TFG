@@ -10,7 +10,6 @@ class WSConv2d(nn.Module):
         self.bias = torch.as_tensor(self.conv.bias)
         self.conv.bias = None
 
-        # conv layer
         nn.init.normal_(self.conv.weight)
         nn.init.zeros_(self.bias)
 

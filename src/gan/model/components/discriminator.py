@@ -8,12 +8,10 @@ import gan.config.hyperparameters as hyperparameters
 class Discriminator(nn.Module):
     def __init__(self, z_dim, in_channels, img_channels=3):
         super(Discriminator, self).__init__()
+        
         self.prog_blocks, self.rgb_layers = nn.ModuleList([]), nn.ModuleList([])
         self.leaky = nn.LeakyReLU(0.2)
 
-        # here we work back ways from factors because the discriminator
-        # should be mirrored from the generator. So the first prog_block and
-        # rgb layer we append will work for input size 1024x1024, then 512->256-> etc
         for i in range(len(hyperparameters.FACTORS) - 1, 0, -1):
             conv_in = int(in_channels * hyperparameters.FACTORS[i])
             conv_out = int(in_channels * hyperparameters.FACTORS[i - 1])
@@ -22,26 +20,19 @@ class Discriminator(nn.Module):
                 WSConv2d(img_channels, conv_in, kernel_size=1, stride=1, padding=0)
             )
 
-        # perhaps confusing name "initial_rgb" this is just the RGB layer for 4x4 input size
-        # did this to "mirror" the generator initial_rgb
-        self.initial_rgb = WSConv2d(
-            img_channels, in_channels, kernel_size=1, stride=1, padding=0
-        )
+        self.initial_rgb = WSConv2d(img_channels, in_channels, kernel_size=1, stride=1, padding=0)
         self.rgb_layers.append(self.initial_rgb)
-        self.avg_pool = nn.AvgPool2d(
-            kernel_size=2, stride=2
-        )  # down sampling using avg pool
+        
+        self.avg_pool = nn.AvgPool2d(kernel_size=2, stride=2)
 
-        # this is the block for 4x4 input size
         self.final_block = nn.Sequential(
-            # +1 to in_channels because we concatenate from MiniBatch std
             WSConv2d(in_channels + 1, in_channels, kernel_size=3, padding=1),
             nn.LeakyReLU(0.2),
             WSConv2d(in_channels, in_channels, kernel_size=4, padding=0, stride=1),
             nn.LeakyReLU(0.2),
             WSConv2d(
                 in_channels, 1, kernel_size=1, padding=0, stride=1
-            ),  # we use this instead of linear layer
+            ),
         )
 
     def fade_in(self, alpha, downscaled, out):  
@@ -60,7 +51,7 @@ class Discriminator(nn.Module):
 
         out = self.leaky(self.rgb_layers[cur_step](x))
 
-        if steps == 0:  # i.e, image is 4x4
+        if steps == 0:
             out = self.minibatch_std(out)
             return self.final_block(out).view(out.shape[0], -1)
 

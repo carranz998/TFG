@@ -10,6 +10,9 @@ from torch import nn
 from torchvision.models import inception_v3
 
 
+# The code from this file was taken from https://github.com/hukkelas/pytorch-frechet-inception-distance
+
+
 def to_cuda(elements):
     """
     Transfers elements to cuda if GPU is available

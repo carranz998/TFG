@@ -8,7 +8,7 @@ from gan.model.components.ws_conv2d import WSConv2d
 
 
 class Generator(nn.Module):
-    def __init__(self, z_dim, in_channels, img_channels=3):
+    def __init__(self, z_dim: int, in_channels: int, img_channels: int=3):
         super(Generator, self).__init__()
 
         self.initial = nn.Sequential(
@@ -44,7 +44,7 @@ class Generator(nn.Module):
         upscaled = torch.Tensor()
 
         for step in range(steps):
-            upscaled = F.interpolate(out, scale_factor=2, mode="nearest")
+            upscaled = F.interpolate(out, scale_factor=2, mode='nearest')
             out = self.prog_blocks[step](upscaled)
 
         final_upscaled = self.rgb_layers[steps - 1](upscaled)

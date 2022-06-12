@@ -1,11 +1,12 @@
 import gan.config.hyperparameters as hyperparameters
 import torch
 import torch.nn as nn
+import torch.optim as optim
 
 
 class Checkpoint:
     @classmethod
-    def load(cls, model: nn.Module, optimizer: torch.optim.Optimizer, input_filepath: str) -> None:
+    def load(cls, model: nn.Module, optimizer: optim.Optimizer, input_filepath: str) -> None:
         print('=> Loading checkpoint')
 
         try:
@@ -20,7 +21,7 @@ class Checkpoint:
             print('There is no file to load data from.')
 
     @classmethod
-    def save(cls, model: nn.Module, optimizer: torch.optim.Optimizer, output_filepath: str) -> None:
+    def save(cls, model: nn.Module, optimizer: optim.Optimizer, output_filepath: str) -> None:
         print('=> Saving checkpoint')
 
         checkpoint = {'state_dict': model.state_dict(), 'optimizer': optimizer.state_dict()}

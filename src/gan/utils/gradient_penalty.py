@@ -4,12 +4,14 @@ import gan.config.hyperparameters as hyperparameters
 
 
 def gradient_penalty(critic: nn.Module, real: torch.Tensor, fake: torch.Tensor, 
-        alpha: float, train_step: int, device: str='cpu'):
+        alpha: float, train_step: int):
     batch_size, channels, height, width = real.shape
+
     beta = torch \
         .rand((batch_size, 1, 1, 1)) \
         .repeat(1, channels, height, width) \
         .to(hyperparameters.DEVICE)
+        
     interpolated_images = real * beta + fake.detach() * (1 - beta)
     interpolated_images.requires_grad_(True)
 

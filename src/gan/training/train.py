@@ -1,9 +1,10 @@
 import os
 from math import log2
+from typing import Any, Dict
+from dataset_operations.dataset_resolution_adapter import DatasetResolutionAdapter
 
 import gan.config.hyperparameters as hyperparameters
 import torch
-from gan.model.builder.dataset_builder import DatasetBuilder
 from gan.model.pro_gan import ProGAN
 from gan.utils.fid import fid_main
 from gan.utils.gradient_penalty import gradient_penalty
@@ -44,7 +45,7 @@ def train_fn(
             fake = gen(noise, alpha, step)
             critic_real = critic(real, alpha, step)
             critic_fake = critic(fake.detach(), alpha, step)
-            gp = gradient_penalty(critic, real, fake, alpha, step, device=hyperparameters.DEVICE)
+            gp = gradient_penalty(critic, real, fake, alpha, step)
             loss_critic = (
                 -(torch.mean(critic_real) - torch.mean(critic_fake))
                 + hyperparameters.LAMBDA_GP * gp
@@ -112,12 +113,12 @@ def train_all():
     step = calculate_step()
 
     for num_epochs in hyperparameters.PROGRESSIVE_EPOCHS[step:]:
-        alpha = 1e-5  # start with very low alpha
+        alpha = 1e-5
         image_size = 4 * 2 ** step
 
-        image_components = DatasetBuilder.build_components(image_size)
-        loader = image_components['dataloader']
-        dataset = image_components['dataset']
+        dataset_components = DatasetResolutionAdapter.adapt_to(image_size)
+        loader = dataset_components['dataloader']
+        dataset = dataset_components['dataset']
         
         print(f"Current image size: {image_size}")
 
@@ -142,14 +143,18 @@ def train_all():
             if hyperparameters.SAVE_MODEL:
                 pro_gan.save_configurations()
 
-        image_size = 4 * 2 ** step
-
-        dirname_fake_images = os.path.join('generated_images', str(image_size))
-        dirname_real_images = os.path.join('real_images', str(image_size))
-
-        fid_value = fid_main(dirname_fake_images, dirname_real_images, batch_size=image_components['batch_size'])
-        print(f'EL FID VALUE ES: {fid_value}')
-
-        writer.add_scalar('FID', fid_value, global_step=tensorboard_step)
+        calculate_fid(step, tensorboard_step, dataset_components, writer)
 
         step += 1
+
+
+def calculate_fid(step: int, tensorboard_step: int, dataset_components: Dict[str, Any], writer: SummaryWriter):
+    image_size = 4 * 2 ** step
+
+    dirname_fake_images = os.path.join('generated_images', str(image_size))
+    dirname_real_images = os.path.join('real_images', str(image_size))
+
+    fid_value = fid_main(dirname_fake_images, dirname_real_images, batch_size=dataset_components['batch_size'])
+    print(f'EL FID VALUE ES: {fid_value}')
+
+    writer.add_scalar('FID', fid_value, global_step=tensorboard_step)

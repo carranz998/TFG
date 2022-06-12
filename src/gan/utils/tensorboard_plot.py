@@ -17,6 +17,7 @@ def plot_to_tensorboard(
     with torch.no_grad():
         img_grid_real = torchvision.utils.make_grid(real[:8], normalize=True)
         img_grid_fake = torchvision.utils.make_grid(fake[:8], normalize=True)
+        
         writer.add_image('Real', img_grid_real, global_step=tensorboard_step)
         writer.add_image('Fake', img_grid_fake, global_step=tensorboard_step)
 
